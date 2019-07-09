@@ -1,8 +1,11 @@
 
 import click
-import badapi
 
-from http.server import HTTPServer
+#import badapi
+#from . import monkey
+#import badapiagain
+from .monkey import Monkey
+from .badapi import BadApi
 
 @click.command("start", short_help="Run a simple badapi")
 @click.option(
@@ -19,7 +22,7 @@ from http.server import HTTPServer
 )
 @click.option(
     "--latency-range", '-R', 
-    help='The given latency is randomly increased or decreased by the given amount.', 
+    help='The latency is randomly increased or decreased by the given amount.', 
     type=int, 
     default=0
 )
@@ -31,4 +34,5 @@ def start_command(
     """
     Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
     """
-    print('doing the httpserver  thing now')
+    BadApi().start()
+    

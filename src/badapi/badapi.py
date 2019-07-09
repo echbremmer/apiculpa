@@ -8,8 +8,23 @@
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import badapirequesthandler
+
 from io import BytesIO
+
+class BadApi:
+    
+    httpd = None
+
+    def __init__(self, Port=3003, Latency=0, Reliability=100, Latency_range=0):
+        
+        self.httpd = HTTPServer(('localhost', Port), SimpleHTTPRequestHandler)
+        print('Bad api started on localhost:' + str(Port))
+        print('Latency: '+ str(Latency) + ' seconds')
+        print('Raliability: '+ str(Reliability) + '%')
+        print('To stop type: ctrl c ')
+    
+    def start(self):
+        self.httpd.serve_forever()
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
@@ -28,8 +43,3 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         response.write(b'Received: ')
         response.write(body)
         self.wfile.write(response.getvalue())
-
-
-httpd = HTTPServer(('localhost', 8000), SimpleHTTPRequestHandler)
-print('Server started on localhost:8000')
-httpd.serve_forever()
