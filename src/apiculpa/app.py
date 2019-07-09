@@ -1,5 +1,5 @@
 """
-    badapi.py
+    app.py
     ~~~~~~~~~
     This module implements the main application. 
     
@@ -45,7 +45,7 @@ class http_server:
     def __init__(self, settings, port, host):
         BadApiHandler.settings = settings
         print("*  ")
-        print("* Server running on " + str(host) + ":" + str(port))
+        print("* API available on " + str(host) + ":" + str(port))
         server = HTTPServer((host, port), BadApiHandler)
         server.serve_forever()
 
@@ -76,7 +76,7 @@ class BadApiHandler(BaseHTTPRequestHandler):
             return
 
 
-class BadApi:
+class Apiculpa:
     def __init__(
         self, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
     ):
@@ -86,12 +86,12 @@ class BadApi:
 
         maxlatency = latency + latency_range
 
-        print("* Creating a bad api with following settings: ")
+        print("* Starting Apiculpa ")
         if latency_range == 0:
-            print("* Added latency is: " + str(latency) + " milliseconds")
+            print("* Added latency is " + str(latency) + " milliseconds")
         else:
             print(
-                "* Added latency ranges from: "
+                "* Added latency ranges from "
                 + str(latency)
                 + " to "
                 + str(maxlatency)
