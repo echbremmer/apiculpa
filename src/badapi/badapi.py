@@ -12,6 +12,7 @@
         option to return a 500 instead. Maybe a 'failrate' and a '500rate'
     -   no data or headers are returned. 
     -   proper error handling
+    -   print in case of purposeful fail or delay
 
     :copyright: 2019 Emile Bremmer
     :license: MIT
@@ -47,35 +48,28 @@ class http_server:
         server = HTTPServer((host, port), BadApiHandler)
         server.serve_forever()
 
-
 class BadApiHandler(BaseHTTPRequestHandler):
     settings = None
     def do_GET(self):
-        
-        # first determine whether to do something at all
-        random = randrange(0, 101, 2)
-        print('randomnumber ' + str(random))
-        failrate = self.settings.getFailrate()
-        print('failrate ' + str(failrate))
-
-        if random  > self.settings.getFailrate():
+        random = randrange(0, 101, 2)    
+        if random  < self.settings.getFailrate():
+            # do nothing
+            return
+        else:
             latency = self.settings.getLatency() / 1000
-            range = self.settings.getLatency_range() / 1000
-            
-            if(range == 0):
-                sleep(latency)
-            else:
-                totallatency = latency + uniform(0.0, range)
-                #print('waiting this amount: ' + str(totallatency))
-                sleep(totallatency)
+            if (latency > 0):  
+                range = self.settings.getLatency_range() / 1000
+                
+                if(range == 0):
+                    sleep(latency)
+                else:
+                    totallatency = latency + uniform(0.0, range)
+                    sleep(totallatency)
             
             self.send_response(200)
             self.send_header('Content-type','text/html')
             self.end_headers()
             self.wfile.write(b'{}')
-            return
-        else:
-            # do nothing
             return
 
 class BadApi:
@@ -84,18 +78,15 @@ class BadApi:
         self.host = host
         self.settings = Badness(latency, failrate, latency_range)
         
+        maxlatency = latency + latency_range
+
         print('>> Creating a bad api with following settings: ')
         if latency_range == 0:
-
-            print('>> Added latency is: ' + str(self.settings.getLatency()) + ' milliseconds')
+            print('>> Added latency is: ' + str(latency) + ' milliseconds')
         else:
-            print('>> Added latency ranges from: ' + str(self.settings.getLatency()) + ' to ' + str(self.settings.getLatency_range()) + ' milliseconds')
+            print('>> Added latency ranges from: ' + str(latency) + ' to ' + str(maxlatency) + ' milliseconds')
         
         print('>> Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
-        
-
-        #print(str(self.port))
-        #print(str(self.host))
 
         self.server = http_server(self.settings, self.port, self.host)
 

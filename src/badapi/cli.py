@@ -39,7 +39,9 @@ def start_command(
 ):
 
     """
-    Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
+    Starts a simple dummy API with configurable latency and failrate. 
+    Defaults to a reliable and fast API. Using the following options 
+    we can introduce following behaviour:
     """
     print(host)
     BadApi(latency, failrate, latency_range, host, port)
