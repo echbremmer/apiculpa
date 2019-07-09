@@ -1,0 +1,45 @@
+{
+    "word": "culpa",
+    "plural": "culpae",
+    "sources": [
+      {
+        "source": "https://www.merriam-webster.com/dictionary/culpa",
+        "etymology": "Latin, guilt, fault; probably akin to Old Irish col sin, blame, Welsh cwl",
+        "definitions": [
+          {
+            "definition": "Roman & civil law : actionable negligence or fault ",
+            "partOfSpeech": "noun"
+          },
+          {
+            "definition": "Roman & civil law : all actionable fault or misconduct including both negligence and willful or wanton wrongs arising from malice, fraud, or a desire for wrongful gain ",
+            "partOfSpeech": "noun"
+          }
+        ]
+      },
+      {
+        "source": "http://www.latin-dictionary.net/search/latin/culpa",
+        "definitions": [
+          {
+            "definition": "(sense of) guilt",
+            "partOfSpeech": "noun"
+          },
+          {
+            "definition": "error",
+            "partOfSpeech": "noun"
+          },
+          {
+            "definition": "fault/defect (moral/other)",
+            "partOfSpeech": "noun"
+          },
+          {
+            "definition": "offense",
+            "partOfSpeech": "noun"
+          },
+          {
+            "definition": "sickness/injury",
+            "partOfSpeech": "noun"
+          }
+        ]
+      }
+    ]
+  }

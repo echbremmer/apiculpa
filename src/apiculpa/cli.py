@@ -35,4 +35,4 @@ def run_command(failrate, latency, latency_range, port, host, input):
     """
     Starts a dummy API with configurable latency and failrate. Defaults to a pretty unreliable and slow API. Use these options to change its behaviour:
     """
-    Apiculpa(latency, failrate, latency_range, host, port)
+    Apiculpa(input, latency, failrate, latency_range, host, port)

@@ -10,10 +10,7 @@
     -   right now the failrate results in a 'connection reset'. It 
         might be useful to instead give an option to return a 500 
         instead. Maybe a 'failrate' and a '500rate'?
-    -   no headers are returned and data is hardcoded as an empty
-        json.
     -   proper error handling
-    -   print to console in case of purposeful fail or delay
 
     :copyright: 2019 Emile Bremmer
     :license: MIT
@@ -25,11 +22,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from io import BytesIO
 
 
-class Badness:
-    def __init__(self, latency, failrate, latency_range):
+class Behaviour:
+    def __init__(self, latency, failrate, latency_range, response_file):
         self.latency = latency
         self.failrate = failrate
         self.latency_range = latency_range
+        self.response_file = response_file
 
     def getLatency(self):
         return self.latency
@@ -40,49 +38,63 @@ class Badness:
     def getLatency_range(self):
         return self.latency_range
 
+    def getResponseFile(self):
+        return self.response_file
+
 
 class http_server:
-    def __init__(self, settings, port, host):
-        BadApiHandler.settings = settings
+    def __init__(self, behaviour, port, host):
+        ApiCulpaHTTPRequestHandler.behaviour = behaviour
         print("*  ")
         print("* API available on " + str(host) + ":" + str(port))
-        server = HTTPServer((host, port), BadApiHandler)
+        server = HTTPServer((host, port), ApiCulpaHTTPRequestHandler)
         server.serve_forever()
 
 
-class BadApiHandler(BaseHTTPRequestHandler):
-    settings = None
+class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
+    behaviour = None
 
     def do_GET(self):
         random = randrange(0, 101, 2)
-        if random < self.settings.getFailrate():
+        if random < self.behaviour.getFailrate():
             # do nothing
             return
         else:
-            latency = self.settings.getLatency() / 1000
-            if latency > 0:
-                range = self.settings.getLatency_range() / 1000
+            latency = self.behaviour.getLatency()
 
-                if range == 0:
-                    sleep(latency)
-                else:
-                    totallatency = latency + uniform(0.0, range)
-                    sleep(totallatency)
+            range = self.behaviour.getLatency_range()
+
+            if range == 0:
+                sleep(latency / 1000)
+                latency_header = int(latency)
+            else:
+                totallatency = latency + uniform(0.0, range)
+                sleep(totallatency / 1000)
+                latency_header = int(totallatency)
+
+            # read response data from input file
+            #file = open(self.behaviour.getResponseData() ,"r")
+            file = self.behaviour.getResponseFile()
+            
+            print("attempting to open: " + file.name )
+            response = file.read()
 
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
+            self.send_header("Content-type", "application/json")
+            self.send_header("User-Agent", "Apiculpa/BETA")
+            self.send_header("x-latency-milliseconds", str(latency_header))
             self.end_headers()
-            self.wfile.write(b"{}")
+            self.wfile.write(str.encode(response))
+            #self.wfile.write(b"{}")
             return
 
 
 class Apiculpa:
     def __init__(
-        self, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
-    ):
+        self, input, latency=0, failrate=0, latency_range=0, host="localhost", port=3002):
         self.port = port
         self.host = host
-        self.settings = Badness(latency, failrate, latency_range)
+        self.behaviour = Behaviour(latency, failrate, latency_range, input)
 
         maxlatency = latency + latency_range
 
@@ -100,12 +112,8 @@ class Apiculpa:
 
         print(
             "* Reliability: "
-            + str(self.settings.getFailrate())
+            + str(self.behaviour.getFailrate())
             + "% of calls will fail"
         )
 
-        self.server = http_server(self.settings, self.port, self.host)
-
-
-# if __name__ == '__main__':
-#    m = BadApi(3,5,1)
+        self.server = http_server(self.behaviour, self.port, self.host)
