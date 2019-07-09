@@ -7,12 +7,13 @@
     https://stackoverflow.com/questions/18444395/basehttprequesthandler-with-custom-instance
     
     todo: 
-    -   right now the failrate results in a 'connection reset' as if the server
-        simply doesn't respond anymore. It might be useful to instead give an 
-        option to return a 500 instead. Maybe a 'failrate' and a '500rate'
-    -   no data or headers are returned. 
+    -   right now the failrate results in a 'connection reset'. It 
+        might be useful to instead give an option to return a 500 
+        instead. Maybe a 'failrate' and a '500rate'?
+    -   no headers are returned and data is hardcoded as an empty
+        json.
     -   proper error handling
-    -   print in case of purposeful fail or delay
+    -   print to console in case of purposeful fail or delay
 
     :copyright: 2019 Emile Bremmer
     :license: MIT
@@ -20,9 +21,7 @@
 from time import sleep 
 from random import uniform
 from random import randrange
-
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
 from io import BytesIO
 
 class Badness:
@@ -43,8 +42,8 @@ class Badness:
 class http_server:
     def __init__(self, settings, port, host):
         BadApiHandler.settings = settings
-        print('>>  ')
-        print('>> Server running on ' + str(host) + ':' + str(port))
+        print('*  ')
+        print('* Server running on ' + str(host) + ':' + str(port))
         server = HTTPServer((host, port), BadApiHandler)
         server.serve_forever()
 
@@ -80,13 +79,13 @@ class BadApi:
         
         maxlatency = latency + latency_range
 
-        print('>> Creating a bad api with following settings: ')
+        print('* Creating a bad api with following settings: ')
         if latency_range == 0:
-            print('>> Added latency is: ' + str(latency) + ' milliseconds')
+            print('* Added latency is: ' + str(latency) + ' milliseconds')
         else:
-            print('>> Added latency ranges from: ' + str(latency) + ' to ' + str(maxlatency) + ' milliseconds')
+            print('* Added latency ranges from: ' + str(latency) + ' to ' + str(maxlatency) + ' milliseconds')
         
-        print('>> Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
+        print('* Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
 
         self.server = http_server(self.settings, self.port, self.host)
 

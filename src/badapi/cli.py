@@ -1,7 +1,7 @@
 
 import click
 
-from .badapi import BadApi
+from .app import BadApi
 
 @click.command("start", short_help="Run a simple badapi")
 @click.option(
@@ -43,7 +43,6 @@ def start_command(
     Defaults to a reliable and fast API. Using the following options 
     we can introduce following behaviour:
     """
-    print(host)
     BadApi(latency, failrate, latency_range, host, port)
 
     
