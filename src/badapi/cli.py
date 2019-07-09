@@ -1,10 +1,6 @@
 
 import click
 
-#import badapi
-#from . import monkey
-#import badapiagain
-from .monkey import Monkey
 from .badapi import BadApi
 
 @click.command("start", short_help="Run a simple badapi")
@@ -34,5 +30,7 @@ def start_command(
     """
     Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
     """
-    #BadApi().start()
+
+    BadApi(latency, failrate, latency_range)
+    
     
