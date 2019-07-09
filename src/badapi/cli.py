@@ -22,15 +22,27 @@ from .badapi import BadApi
     type=int, 
     default=0
 )
+@click.option(
+    "--port", '-P',
+    help='Port where the API will be listening', 
+    type=int,
+    default=3002
+) 
+@click.option(
+    "--host", '-H',
+    help='Host of the API',
+    default="localhost"
+) 
 @click.argument('input', type=click.File('r'))
 def start_command(
-    failrate, latency, latency_range, input
+    failrate, latency, latency_range, port, host, input
 ):
 
     """
     Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
     """
+    print(host)
+    BadApi(latency, failrate, latency_range, host, port)
 
-    BadApi(latency, failrate, latency_range)
     
     

@@ -10,13 +10,13 @@
     -   right now the failrate results in a 'connection reset' as if the server
         simply doesn't respond anymore. It might be useful to instead give an 
         option to return a 500 instead. Maybe a 'failrate' and a '500rate'
+    -   no data or headers are returned. 
     -   proper error handling
-    
+
     :copyright: 2019 Emile Bremmer
     :license: MIT
 """
-import time
-#import random
+from time import sleep 
 from random import uniform
 from random import randrange
 
@@ -40,16 +40,18 @@ class Badness:
         return self.latency_range
 
 class http_server:
-    def __init__(self, settings):
+    def __init__(self, settings, port, host):
         BadApiHandler.settings = settings
         print('>>  ')
-        print('>> Server running on localhost:8080 ')
-        server = HTTPServer(('localhost', 8080), BadApiHandler)
+        print('>> Server running on ' + str(host) + ':' + str(port))
+        server = HTTPServer((host, port), BadApiHandler)
         server.serve_forever()
+
 
 class BadApiHandler(BaseHTTPRequestHandler):
     settings = None
     def do_GET(self):
+        
         # first determine whether to do something at all
         random = randrange(0, 101, 2)
         print('randomnumber ' + str(random))
@@ -61,11 +63,11 @@ class BadApiHandler(BaseHTTPRequestHandler):
             range = self.settings.getLatency_range() / 1000
             
             if(range == 0):
-                time.sleep(latency)
+                sleep(latency)
             else:
                 totallatency = latency + uniform(0.0, range)
                 #print('waiting this amount: ' + str(totallatency))
-                time.sleep(totallatency)
+                sleep(totallatency)
             
             self.send_response(200)
             self.send_header('Content-type','text/html')
@@ -73,24 +75,29 @@ class BadApiHandler(BaseHTTPRequestHandler):
             self.wfile.write(b'{}')
             return
         else:
-            # Close the connection
-            # SimpleHTTPRequestHandler inherits from BaseHTTPServer.BaseHTTPRequestHandler,
-            # which in turn inherits from SocketServer.StreamRequestHandler
-            #therefore we can simply do a self.connection.close()
-            
-            self.finish()
-            self.connection.close()
+            # do nothing
+            return
 
 class BadApi:
-    def __init__(self, latency, failrate, latency_range):
+    def __init__(self, latency=0, failrate=0, latency_range=0, host="localhost", port=3002):
+        self.port = port
+        self.host = host
         self.settings = Badness(latency, failrate, latency_range)
         
-        print('>> Creating BadApi with following settings: ')
-        print('>> Latency is: ' + str(self.settings.getLatency()) + ' milliseconds')
-        print('>> Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
-        print('>> Latency range is +/-: ' + str(self.settings.getLatency_range()) + ' milliseconds')
+        print('>> Creating a bad api with following settings: ')
+        if latency_range == 0:
 
-        self.server = http_server(self.settings)
+            print('>> Added latency is: ' + str(self.settings.getLatency()) + ' milliseconds')
+        else:
+            print('>> Added latency ranges from: ' + str(self.settings.getLatency()) + ' to ' + str(self.settings.getLatency_range()) + ' milliseconds')
+        
+        print('>> Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
+        
+
+        #print(str(self.port))
+        #print(str(self.host))
+
+        self.server = http_server(self.settings, self.port, self.host)
 
 #if __name__ == '__main__':
 #    m = BadApi(3,5,1)
