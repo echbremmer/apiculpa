@@ -34,5 +34,5 @@ def start_command(
     """
     Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
     """
-    BadApi().start()
+    #BadApi().start()
     
