@@ -18,11 +18,12 @@
     :copyright: 2019 Emile Bremmer
     :license: MIT
 """
-from time import sleep 
+from time import sleep
 from random import uniform
 from random import randrange
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from io import BytesIO
+
 
 class Badness:
     def __init__(self, latency, failrate, latency_range):
@@ -35,59 +36,76 @@ class Badness:
 
     def getFailrate(self):
         return self.failrate
-    
+
     def getLatency_range(self):
         return self.latency_range
+
 
 class http_server:
     def __init__(self, settings, port, host):
         BadApiHandler.settings = settings
-        print('*  ')
-        print('* Server running on ' + str(host) + ':' + str(port))
+        print("*  ")
+        print("* Server running on " + str(host) + ":" + str(port))
         server = HTTPServer((host, port), BadApiHandler)
         server.serve_forever()
 
+
 class BadApiHandler(BaseHTTPRequestHandler):
     settings = None
+
     def do_GET(self):
-        random = randrange(0, 101, 2)    
-        if random  < self.settings.getFailrate():
+        random = randrange(0, 101, 2)
+        if random < self.settings.getFailrate():
             # do nothing
             return
         else:
             latency = self.settings.getLatency() / 1000
-            if (latency > 0):  
+            if latency > 0:
                 range = self.settings.getLatency_range() / 1000
-                
-                if(range == 0):
+
+                if range == 0:
                     sleep(latency)
                 else:
                     totallatency = latency + uniform(0.0, range)
                     sleep(totallatency)
-            
+
             self.send_response(200)
-            self.send_header('Content-type','text/html')
+            self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(b'{}')
+            self.wfile.write(b"{}")
             return
 
+
 class BadApi:
-    def __init__(self, latency=0, failrate=0, latency_range=0, host="localhost", port=3002):
+    def __init__(
+        self, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
+    ):
         self.port = port
         self.host = host
         self.settings = Badness(latency, failrate, latency_range)
-        
+
         maxlatency = latency + latency_range
 
-        print('* Creating a bad api with following settings: ')
+        print("* Creating a bad api with following settings: ")
         if latency_range == 0:
-            print('* Added latency is: ' + str(latency) + ' milliseconds')
+            print("* Added latency is: " + str(latency) + " milliseconds")
         else:
-            print('* Added latency ranges from: ' + str(latency) + ' to ' + str(maxlatency) + ' milliseconds')
-        
-        print('* Reliability: ' + str(self.settings.getFailrate()) + '% of calls will fail')
+            print(
+                "* Added latency ranges from: "
+                + str(latency)
+                + " to "
+                + str(maxlatency)
+                + " milliseconds"
+            )
+
+        print(
+            "* Reliability: "
+            + str(self.settings.getFailrate())
+            + "% of calls will fail"
+        )
 
         self.server = http_server(self.settings, self.port, self.host)
 
-#if __name__ == '__main__':
+
+# if __name__ == '__main__':
 #    m = BadApi(3,5,1)
