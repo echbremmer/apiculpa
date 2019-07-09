@@ -72,26 +72,22 @@ class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
                 sleep(totallatency / 1000)
                 latency_header = int(totallatency)
 
-            # read response data from input file
-            #file = open(self.behaviour.getResponseData() ,"r")
             file = self.behaviour.getResponseFile()
-            
-            print("attempting to open: " + file.name )
-            response = file.read()
 
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.send_header("User-Agent", "Apiculpa/BETA")
             self.send_header("x-latency-milliseconds", str(latency_header))
             self.end_headers()
-            self.wfile.write(str.encode(response))
-            #self.wfile.write(b"{}")
+            self.wfile.write(str.encode(file.read()))
+
             return
 
 
 class Apiculpa:
     def __init__(
-        self, input, latency=0, failrate=0, latency_range=0, host="localhost", port=3002):
+        self, input, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
+    ):
         self.port = port
         self.host = host
         self.behaviour = Behaviour(latency, failrate, latency_range, input)
