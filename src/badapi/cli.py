@@ -1,8 +1,8 @@
 
 import click
-from flask import Flask 
+import badapi
 
-from badapi import badapi
+from http.server import HTTPServer
 
 @click.command("start", short_help="Run a simple badapi")
 @click.option(
@@ -31,20 +31,4 @@ def start_command(
     """
     Starts a simple dummy API with configurable latency and reliability. Defaults to a reliable and fast API. Using the following options we can introduce following behaviour:
     """
-    print('doing the flask thing now')
-    
-    #app = Flask(__name__)
-
-
-    #@app.route('/')
-    #def hello():
-    #    return 'Hello, World!'
-
-    #app.run(debug=True)   
-    badapi.BadApi()
-    #click.echo(badapi. something? , output)
-    print('boem')
-
-
-if __name__ == '__main__':
-    start_command()
+    print('doing the httpserver  thing now')

@@ -1,15 +1,7 @@
-"""
-    badapi.py
-    ~~~~~~~~~
-    This module implements the main application
-    
-    :copyright: 2019 Emile Bremmer
-    :license: MIT
-"""
-
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import badapirequesthandler
+
 from io import BytesIO
+
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 

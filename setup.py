@@ -12,8 +12,7 @@ setup(
     python_requires="!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     py_modules=['badapi'],
     install_requires=[
-        'Click',
-        'Flask'
+        'Click'
     ],
     entry_points={"console_scripts": ["badapi = badapi.cli:start_command"]},
 )
