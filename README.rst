@@ -8,7 +8,7 @@ Installation
 
   $ git clone https://github.com/echbremmer/Apiculpa.git
   
-  $ cd apiculpa
+  $ cd Apiculpa
    
   $ python3 -m venv venv
   
