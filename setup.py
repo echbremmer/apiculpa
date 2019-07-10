@@ -7,6 +7,7 @@ setup(
     url="https://github.com/echbremmer/apiculpa",
     author="Emile Bremmer",
     description="A simple way to configure and run a poor performing and unreliable dummy API",
+#    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     packages=find_packages("src"),
     package_dir={"": "src"},
     python_requires="!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",

@@ -1,7 +1,9 @@
 import click
 
-from apiculpa.app import Apiculpa
+from .app import Apiculpa
+#import app
 
+#from app import Apiculpa
 
 @click.command("run", short_help="Run an apiculpa")
 @click.option(
