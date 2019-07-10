@@ -16,14 +16,14 @@ from .app import Apiculpa
 @click.option(
     "--latency",
     "-L",
-    help="The number of seconds that the API will wait before sending a response.",
+    help="The number of milliseconds that the API will wait before sending a response.",
     type=int,
     default=6000,
 )
 @click.option(
     "--latency-range",
     "-R",
-    help="The latency is randomly increased or decreased by the given amount.",
+    help="The latency is randomly increased upto the given milliseconds",
     type=int,
     default=2500,
 )
