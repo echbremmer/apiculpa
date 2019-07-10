@@ -31,13 +31,14 @@ If you are using Python 2 you need to use virtualenv instead of venv
 
 Usage
 -----
+To start an API with some default unreliability simply run:
+
 .. code-block:: console
 
   $ apiculpa examples/culpa.json
 
-This will start the api endpoint with some basic unreliability. To specify 
-what unreliability you would like the API to have you can provide these as 
-options to the command.
+To specify the unreliability you would like the API to have you can provide these as 
+options:
 
 .. code-block:: console
 
