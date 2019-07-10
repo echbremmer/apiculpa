@@ -6,9 +6,9 @@ Installation
 ------------
 .. code-block:: console
 
-  $ git clone https://github.com/echbremmer/Apiculpa.git
+  $ git clone https://github.com/echbremmer/apiculpa.git
   
-  $ cd Apiculpa
+  $ cd apiculpa
    
   $ python3 -m venv venv
   
