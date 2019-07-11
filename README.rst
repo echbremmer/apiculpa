@@ -1,6 +1,6 @@
 Apiculpa
 ===============
-A simple way to run an API that behaves in a configurably poor manner
+A simple way to run an API that behaves in a configurably poor manner. It is designed to help your application handle API calls correctly even if they do not behave very well. 
 
 Installation
 ------------
@@ -56,5 +56,16 @@ options:
 .. code-block:: console
 
   $ apiculpa examples/culpa.json --latency=5000 --latency-range=2500 --failrate=30
+
+Limitations / TODO
+------------------
+There are some limitations in its current form. Feel free to contribute by means of a pull request:
+
+* Multithreading is not supported so this tool cannot be used for load/stress testing.
+
+* Mimicking functional and server side errors (e.g. receiving a 4xx or 5xx) is not supported currently (failrate will drop the connection to the API)
+
+* Responses from the API are either hardcoded (e.g. headers and http response codes) or based on a static file that is read during loading of the script (body). 
+
 
 
