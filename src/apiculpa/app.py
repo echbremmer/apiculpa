@@ -24,6 +24,7 @@ from twisted.internet import reactor, endpoints
 
 from io import BytesIO
 
+
 class Behaviour:
     def __init__(self, latency, failrate, latency_range, response_file):
         self.latency = latency
@@ -44,54 +45,13 @@ class Behaviour:
         return self.response_file
 
 
-"""class http_server:
-    def __init__(self, behaviour, port, host):
-        ApiCulpaHTTPRequestHandler.behaviour = behaviour
-        print("*  ")
-        print("* API available on " + str(host) + ":" + str(port))
-        server = HTTPServer((host, port), ApiCulpaHTTPRequestHandler)
-        server.serve_forever()
-"""
-
-"""class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
-    behaviour = None
-
-    def do_GET(self):
-        random = randrange(0, 101, 2)
-        if random < self.behaviour.getFailrate():
-            # do nothing
-            return
-        else:
-            latency = self.behaviour.getLatency()
-
-            range = self.behaviour.getLatency_range()
-
-            if range == 0:
-                sleep(latency / 1000)
-                latency_header = int(latency)
-            else:
-                totallatency = latency + uniform(0.0, range)
-                sleep(totallatency / 1000)
-                latency_header = int(totallatency)
-
-            file = self.behaviour.getResponseFile()
-
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.send_header("User-Agent", "Apiculpa/BETA")
-            self.send_header("x-latency-milliseconds", str(latency_header))
-            self.end_headers()
-            self.wfile.write(str.encode(file.read()))
-
-            return"""
-
 class API(resource.Resource):
     isLeaf = True
     numberRequests = 0
     behaviour = None
 
     def render_GET(self, request):
-        
+
         random = randrange(0, 101, 2)
         if random < self.behaviour.getFailrate():
             # do nothing
@@ -111,19 +71,22 @@ class API(resource.Resource):
                     final_latency = latency
                 else:
                     final_latency = latency + uniform(0.0, range)
-                
+
                 latency_header = int(final_latency)
                 print("  ADDING LATENCY ")
-                sleep(final_latency/1000)
+                sleep(final_latency / 1000)
 
             file = self.behaviour.getResponseFile()
-            
+
             request.setHeader(b"Content-type", b"application/json")
             request.setHeader(b"User-Agent", b"Apiculpa/BETA")
-            request.setHeader(b"x-latency-added-milliseconds", str.encode(str(latency_header)))
-            
+            request.setHeader(
+                b"x-latency-added-milliseconds", str.encode(str(latency_header))
+            )
+
             content = str.encode(file.read())
             return content
+
 
 class App:
     def __init__(
@@ -152,9 +115,11 @@ class App:
             + str(self.behaviour.getFailrate())
             + "% of calls will fail"
         )
-        
+
         APIsite = API()
-        
+
         APIsite.behaviour = self.behaviour
-        endpoints.serverFromString(reactor, "tcp:"+str(self.port)).listen(server.Site(APIsite))
+        endpoints.serverFromString(reactor, "tcp:" + str(self.port)).listen(
+            server.Site(APIsite)
+        )
         reactor.run()

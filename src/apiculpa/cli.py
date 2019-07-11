@@ -2,6 +2,7 @@ import click
 
 from .app import App
 
+
 @click.command("run", short_help="Run an apiculpa")
 @click.option(
     "--failrate",
