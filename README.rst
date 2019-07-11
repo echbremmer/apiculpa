@@ -78,19 +78,3 @@ means "through my fault" and is an
 acknowledgement of having done wrong. Source `wikipedia`_
 
 .. _wikipedia: https://en.wikipedia.org/wiki/Mea_culpa
-
-Contributing
-------------
-
-For guidance on setting up a development environment and how to make a
-contribution to Flask, see the `contributing guidelines`_.
-
-.. _contributing guidelines: https://github.com/pallets/flask/blob/master/CONTRIBUTING.rst
-
-
-
-
-
-
-
-
