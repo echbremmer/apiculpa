@@ -18,9 +18,11 @@
 from time import sleep
 from random import uniform
 from random import randrange
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from io import BytesIO
 
+from twisted.web import server, resource
+from twisted.internet import reactor, endpoints
+
+from io import BytesIO
 
 class Behaviour:
     def __init__(self, latency, failrate, latency_range, response_file):
@@ -42,16 +44,16 @@ class Behaviour:
         return self.response_file
 
 
-class http_server:
+"""class http_server:
     def __init__(self, behaviour, port, host):
         ApiCulpaHTTPRequestHandler.behaviour = behaviour
         print("*  ")
         print("* API available on " + str(host) + ":" + str(port))
         server = HTTPServer((host, port), ApiCulpaHTTPRequestHandler)
         server.serve_forever()
+"""
 
-
-class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
+"""class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
     behaviour = None
 
     def do_GET(self):
@@ -81,8 +83,45 @@ class ApiCulpaHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(str.encode(file.read()))
 
-            return
+            return"""
 
+class API(resource.Resource):
+    isLeaf = True
+    numberRequests = 0
+    behaviour = None
+
+    def render_GET(self, request):
+        
+        random = randrange(0, 101, 2)
+        if random < self.behaviour.getFailrate():
+            # do nothing
+            print("  REQ RECEIVED: not sending response")
+            return
+        else:
+            print("  REQ RECEIVED: sending response")
+            latency = self.behaviour.getLatency()
+            range = self.behaviour.getLatency_range()
+
+            # if latency then sleep
+            if latency != 0:
+                # add latency range if applicable
+                if range == 0:
+                    final_latency = latency
+                else:
+                    final_latency = latency + uniform(0.0, range)
+                
+                latency_header = int(final_latency)
+                print("  ADDING LATENCY ")
+                sleep(final_latency/1000)
+
+            file = self.behaviour.getResponseFile()
+            
+            request.setHeader(b"Content-type", b"application/json")
+            request.setHeader(b"User-Agent", b"Apiculpa/BETA")
+            request.setHeader(b"x-latency-milliseconds", str.encode(str(latency_header)))
+            
+            content = str.encode(file.read())
+            return content
 
 class Apiculpa:
     def __init__(
@@ -111,5 +150,12 @@ class Apiculpa:
             + str(self.behaviour.getFailrate())
             + "% of calls will fail"
         )
+        
+        APIsite = API()
+        
+        APIsite.behaviour = self.behaviour
+        endpoints.serverFromString(reactor, "tcp:"+str(self.port)).listen(server.Site(APIsite))
+    
+        reactor.run()
 
-        self.server = http_server(self.behaviour, self.port, self.host)
+        #self.server = http_server(self.behaviour, self.port, self.host)

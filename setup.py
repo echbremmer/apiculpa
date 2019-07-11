@@ -32,7 +32,7 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     python_requires="!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
-    install_requires=["Click"],
+    install_requires=["Click", "Twisted"],
     entry_points={"console_scripts": ["apiculpa = apiculpa.cli:run_command"]},
     project_urls={  
         'Bug Reports': 'https://github.com/echbremmer/apiculpa/issues',
