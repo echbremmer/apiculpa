@@ -103,7 +103,9 @@ class API(resource.Resource):
             range = self.behaviour.getLatency_range()
 
             # if latency then sleep
-            if latency != 0:
+            if latency == 0:
+                latency_header = 0
+            else:
                 # add latency range if applicable
                 if range == 0:
                     final_latency = latency
@@ -118,12 +120,12 @@ class API(resource.Resource):
             
             request.setHeader(b"Content-type", b"application/json")
             request.setHeader(b"User-Agent", b"Apiculpa/BETA")
-            request.setHeader(b"x-latency-milliseconds", str.encode(str(latency_header)))
+            request.setHeader(b"x-latency-added-milliseconds", str.encode(str(latency_header)))
             
             content = str.encode(file.read())
             return content
 
-class Apiculpa:
+class App:
     def __init__(
         self, input, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
     ):
@@ -133,7 +135,7 @@ class Apiculpa:
 
         maxlatency = latency + latency_range
 
-        print("* Starting Apiculpa ")
+        print("* Starting ...")
         if latency_range == 0:
             print("* Added latency is " + str(latency) + " milliseconds")
         else:
@@ -155,7 +157,4 @@ class Apiculpa:
         
         APIsite.behaviour = self.behaviour
         endpoints.serverFromString(reactor, "tcp:"+str(self.port)).listen(server.Site(APIsite))
-    
         reactor.run()
-
-        #self.server = http_server(self.behaviour, self.port, self.host)
