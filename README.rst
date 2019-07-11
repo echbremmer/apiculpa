@@ -73,9 +73,9 @@ Derived from the Latin "Mea Culpa":
 
 .. code-block:: text
 
-Mea culpa is a Latin phrase that 
+*Mea culpa is a Latin phrase that 
 means "through my fault" and is an 
-acknowledgement of having done wrong. 
+acknowledgement of having done wrong. *
 
 Source `wikipedia`_
 
