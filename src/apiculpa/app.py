@@ -3,14 +3,10 @@
     ~~~~~~~~~
     This module implements the main application. 
     
-    Largely following approach discussed here:
-    https://stackoverflow.com/questions/18444395/basehttprequesthandler-with-custom-instance
-    
     todo: 
-    -   right now the failrate results in a 'connection reset'. It 
-        might be useful to instead give an option to return a 500 
-        instead. Maybe a 'failrate' and a '500rate'?
-    -   proper error handling
+    -   failrate caused dropped connection; might be useful to also support return of 500 
+        status codes.
+    -   some error handling
 
     :copyright: 2019 Emile Bremmer
     :license: MIT
@@ -26,47 +22,42 @@ from io import BytesIO
 
 
 class Behaviour:
-    def __init__(self, latency, failrate, latency_range, response_file):
+    def __init__(self, latency, failrate, latency_range):
         self.latency = latency
         self.failrate = failrate
         self.latency_range = latency_range
-        self.response_file = response_file
-
-    def getLatency(self):
-        return self.latency
-
-    def getFailrate(self):
-        return self.failrate
-
-    def getLatency_range(self):
-        return self.latency_range
-
-    def getResponseFile(self):
-        return self.response_file
 
 
 class API(resource.Resource):
     isLeaf = True
     numberRequests = 0
     behaviour = None
+    reactor = None
+    content = "{}"  # default
 
     def render_GET(self, request):
+        self.numberRequests += 1
 
         random = randrange(0, 101, 2)
-        if random < self.behaviour.getFailrate():
-            # do nothing
-            print("  REQ RECEIVED: not sending response")
+        if random < self.behaviour.failrate:
+            # simulate server outtage
+            print("  REQ RECEIVED: crashing server")
+            self.reactor.crash()
+            print("* Restarting ...")
+            self.reactor.run()
+            print("* Restarted")
             return
         else:
             print("  REQ RECEIVED: sending response")
-            latency = self.behaviour.getLatency()
-            range = self.behaviour.getLatency_range()
+            latency = self.behaviour.latency
+            # latency = self.behaviour.getLatency()
+            range = self.behaviour.latency_range()
 
             # if latency then sleep
             if latency == 0:
                 latency_header = 0
             else:
-                # add latency range if applicable
+                # add latency if applicable
                 if range == 0:
                     final_latency = latency
                 else:
@@ -76,16 +67,13 @@ class API(resource.Resource):
                 print("  ADDING LATENCY ")
                 sleep(final_latency / 1000)
 
-            file = self.behaviour.getResponseFile()
-
             request.setHeader(b"Content-type", b"application/json")
             request.setHeader(b"User-Agent", b"Apiculpa/BETA")
             request.setHeader(
                 b"x-latency-added-milliseconds", str.encode(str(latency_header))
             )
 
-            content = str.encode(file.read())
-            return content
+            return self.content.encode("ascii")
 
 
 class App:
@@ -94,7 +82,7 @@ class App:
     ):
         self.port = port
         self.host = host
-        self.behaviour = Behaviour(latency, failrate, latency_range, input)
+        self.behaviour = Behaviour(latency, failrate, latency_range)
 
         maxlatency = latency + latency_range
 
@@ -110,16 +98,14 @@ class App:
                 + " milliseconds"
             )
 
-        print(
-            "* Reliability: "
-            + str(self.behaviour.getFailrate())
-            + "% of calls will fail"
-        )
+        print("* Reliability: " + str(self.behaviour.failrate) + "% of calls will fail")
 
         APIsite = API()
-
         APIsite.behaviour = self.behaviour
+        APIsite.content = input.read()
+
         endpoints.serverFromString(reactor, "tcp:" + str(self.port)).listen(
             server.Site(APIsite)
         )
+        APIsite.reactor = reactor
         reactor.run()
