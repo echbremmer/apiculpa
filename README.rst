@@ -67,5 +67,16 @@ There are some limitations in its current form. Feel free to contribute by means
 
 * Responses from the API are either hardcoded (e.g. headers and http response codes) or based on a static file that is read during loading of the script (body). 
 
+Naming
+------
+Derived from the Latin "Mea Culpa":
+
+| Mea culpa is a Latin phrase that 
+| means "through my fault" and is an 
+| acknowledgement of having done wrong.
+  
+.. wikipedia: https://en.wikipedia.org/wiki/Mea_culpa
+
+
 
 
