@@ -75,6 +75,8 @@ Derived from the Latin "Mea Culpa":
 
 Mea culpa is a Latin phrase that 
 means "through my fault" and is an 
-acknowledgement of having done wrong. Source `wikipedia`_
+acknowledgement of having done wrong. 
+
+Source `wikipedia`_
 
 .. _wikipedia: https://en.wikipedia.org/wiki/Mea_culpa
