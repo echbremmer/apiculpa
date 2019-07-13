@@ -58,7 +58,7 @@ class APIHTTPRequestHandler(BaseHTTPRequestHandler):
                 if self.behaviour.latency_range == 0:
                     final_latency = self.behaviour.latency
                 else:
-                    final_latency = self.behaviour.latency + uniform(0.0, range)
+                    final_latency = self.behaviour.latency + uniform(0.0, self.behaviour.latency_range)
 
                 latency_header = int(final_latency)
                 print("  ADDING LATENCY ")

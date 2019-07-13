@@ -5,9 +5,9 @@ port=$2
 
 while true
 do
-    echo "hitting $host at port $port"
-    echo "Press ctrl+c to stop"
+    printf "> hitting $host at port $port\n"
+    printf "> Press ctrl+c to stop\n"
     curl $host:$port
-    echo "--- call completed ---"
+    printf "\n> --- call completed ---\n"
 done
 
