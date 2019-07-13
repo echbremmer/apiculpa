@@ -40,18 +40,24 @@ class API(resource.Resource):
 
         random = randrange(0, 101, 2)
         if random < self.behaviour.failrate:
-            # simulate server outtage
-            print("  REQ RECEIVED: crashing server")
+            print("  REQ RECEIVED: not sending response")
+            
+            # result of not setting any bytes as content
+            # is that twisted returns a 500 status code. 
+            # Better would be sending nothing back to client.
+            # Following approach is a bit crude bit seems to
+            # work
+            print("  REQ RECEIVED: bringing server down .. on purpose")
             self.reactor.crash()
-            print("* Restarting ...")
+            #sleep(5)
+            print("  REQ RECEIVED: bringing server back up")
             self.reactor.run()
-            print("* Restarted")
             return
         else:
             print("  REQ RECEIVED: sending response")
             latency = self.behaviour.latency
             # latency = self.behaviour.getLatency()
-            range = self.behaviour.latency_range()
+            range = self.behaviour.latency_range
 
             # if latency then sleep
             if latency == 0:
@@ -86,7 +92,7 @@ class App:
 
         maxlatency = latency + latency_range
 
-        print("* Starting ...")
+        print("* Starting API on " + self.host + ":" + str(self.port))
         if latency_range == 0:
             print("* Added latency is " + str(latency) + " milliseconds")
         else:
