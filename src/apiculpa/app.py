@@ -27,9 +27,10 @@ class Behaviour:
         self.latency = latency
         self.failrate = failrate
         self.latency_range = latency_range
-        
+
         self.content = str.encode(response_file.read())
         response_file.close()
+
 
 class http_server:
     def __init__(self, behaviour, port, host):
@@ -50,18 +51,14 @@ class APIHTTPRequestHandler(BaseHTTPRequestHandler):
             print("  IGNORING REQUEST ")
             return
         else:
-            latency = self.behaviour.latency
-
-            range = self.behaviour.latency_range
-
-            if latency == 0:
+            if self.behaviour.latency == 0:
                 latency_header = 0
             else:
-                # add latency if applicable
-                if range == 0:
-                    final_latency = latency
+                # add additional latency based on latency-range if applicable
+                if self.behaviour.latency_range == 0:
+                    final_latency = self.behaviour.latency
                 else:
-                    final_latency = latency + uniform(0.0, range)
+                    final_latency = self.behaviour.latency + uniform(0.0, range)
 
                 latency_header = int(final_latency)
                 print("  ADDING LATENCY ")
@@ -69,11 +66,10 @@ class APIHTTPRequestHandler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header("Content-type", "application/json")
-            self.send_header("User-Agent", "apiculpar/BETA")
+            self.send_header("User-Agent", "apiculpa/BETA")
             self.send_header("x-latency-milliseconds", str(latency_header))
             self.end_headers()
             self.wfile.write(self.behaviour.content)
-
 
             return
 
@@ -100,10 +96,6 @@ class App:
                 + " milliseconds"
             )
 
-        print(
-            "* Reliability: "
-            + str(self.behaviour.failrate)
-            + "% of calls will fail"
-        )
+        print("* Reliability: " + str(self.behaviour.failrate) + "% of calls will fail")
 
         self.server = http_server(self.behaviour, self.port, self.host)

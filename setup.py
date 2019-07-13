@@ -17,7 +17,7 @@ setup(
     author="Emile Bremmer",
     description="A simple way to configure and run a poor performing and unreliable dummy API",
     long_description_content_type='text/x-rst',
-    classifiers=[  
+    classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Development Tools',
@@ -34,7 +34,7 @@ setup(
     python_requires="!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     install_requires=["Click"],
     entry_points={"console_scripts": ["apiculpa = apiculpa.cli:run_command"]},
-    project_urls={  
+    project_urls={
         'Bug Reports': 'https://github.com/echbremmer/apiculpa/issues',
         'Source': 'https://github.com/echbremmer/apiculpa',
 },
