@@ -1,3 +1,12 @@
+"""
+    cli.py
+    ~~~~~~~~~
+    A simple command line application to run apiculpa
+    
+    :copyright: 2019 Emile Bremmer
+    :license: MIT
+"""
+
 import click
 
 from .app import App
