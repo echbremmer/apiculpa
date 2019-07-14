@@ -2,12 +2,8 @@ import click
 
 from .app import App
 
-# import app
 
-# from app import Apiculpa
-
-
-@click.command("run", short_help="Run an apiculpa")
+@click.command("run")
 @click.option(
     "--failrate",
     "-F",
@@ -39,4 +35,14 @@ def run_command(failrate, latency, latency_range, port, host, input):
     """
     Starts a dummy API with configurable latency and failrate. Defaults to a pretty unreliable and slow API. Use these options to change its behaviour:
     """
-    App(input, latency, failrate, latency_range, host, port)
+    content = input.read()
+    input.close()
+
+    App(
+        host,
+        port,
+        content=content,
+        latency=latency,
+        failrate=failrate,
+        latency_range=latency_range,
+    )

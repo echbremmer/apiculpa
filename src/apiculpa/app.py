@@ -16,32 +16,39 @@
     :license: MIT
 """
 
-from .handler import Behaviour
 from .server import APIServer
 
 
 class App:
-    def __init__(
-        self, input, latency=0, failrate=0, latency_range=0, host="localhost", port=3002
-    ):
+    def __init__(self, host, port, content, **kwargs):
         self.port = port
         self.host = host
-        self.behaviour = Behaviour(latency, failrate, latency_range, input)
+        self.content = content
+        self.behaviour = dict()
 
-        maxlatency = latency + latency_range
+        for key in kwargs:
+            print("adding key: " + key + " with value: ")
+            self.behaviour[key] = kwargs[key]
+
+        maxlatency = self.behaviour["latency"] + self.behaviour["latency_range"]
 
         print("* Starting API ")
-        if latency_range == 0:
-            print("* Added latency is " + str(latency) + " milliseconds")
+        if self.behaviour["latency_range"] == 0:
+            print(
+                "* Added latency is " + str(self.behaviour["latency"]) + " milliseconds"
+            )
         else:
             print(
                 "* Added latency ranges from "
-                + str(latency)
+                + str(self.behaviour["latency"])
                 + " to "
                 + str(maxlatency)
                 + " milliseconds"
             )
 
-        print("* Reliability: " + str(self.behaviour.failrate) + "% of calls will fail")
+        print(
+            "* Reliability: " + str(self.behaviour["failrate"]) + "% of calls will fail"
+        )
 
-        self.server = APIServer(self.behaviour, self.port, self.host)
+        # self.server = APIServer(self.port, self.host, latency=10, latency_range=10, failrate=100, content=self.content)
+        self.server = APIServer(self.port, self.host, self.behaviour, self.content)
